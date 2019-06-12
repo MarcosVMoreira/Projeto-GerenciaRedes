@@ -14,7 +14,9 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 
         var bool = [];
         var bool1 = [];
+        var udpInfo = [];
         var anterior = 0;
+        var anterior1 = 0;
 
         var ipAlvo = $('#ipAlvo').val();
 
@@ -23,14 +25,24 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
             ipAlvo = $('#ipAlvo').val();
 
             $.post('consulta.php', {
-                ipAlvo: ipAlvo
+                ipAlvo: ipAlvo,
+                tipoConsulta: "banda"
             }, function (retorno) {
                 let jsonDados = JSON.parse(retorno);
                 anterior = jsonDados['y'];
                 anterior1 = jsonDados['y1'];
             });
 
-            var chart = new CanvasJS.Chart("chartContainer", {
+            $.post('consulta.php', {
+                ipAlvo: ipAlvo,
+                tipoConsulta: "tcpudp"
+            }, function (retorno) {
+                let jsonDados = JSON.parse(retorno);
+                anterior = jsonDados['y'];
+                anterior1 = jsonDados['y1'];
+            });
+
+            var chart = new CanvasJS.Chart("bandwidthChart", {
                 theme: "light2",
                 title: {
                     text: "Uso de rede"
@@ -60,6 +72,36 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
             });
 
             chart.render();
+
+            var chart1 = new CanvasJS.Chart("tcpUdpChart", {
+                theme: "light2",
+                title: {
+                    text: "Pacotes TCP/UDP enviados"
+                },
+                axisX:{
+                    title: "Tempo"
+                },
+                axisY:{
+                    logarithmic: true,
+                    includeZero: false,
+                    suffix: " Número de pacotes"
+                },
+                data: [{
+                    type: "line",
+                    toolTipContent: "{y} Pacotes",
+                    dataPoints: udpInfo
+                }/*,
+                {        
+                    type: "line",
+                    yValueFormatString: "#,##0.0#",
+                    toolTipContent: "{y} Bits",
+                    dataPoints: bool1
+                }*/
+                
+                ]
+            });
+
+            chart1.render();
             
             var updateInterval = 3000;
             setInterval(function () { updateChart(chart) }, updateInterval);
@@ -71,8 +113,50 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 
         function updateChart(chart) {
 
+            processaBandwidth(chart);
+
+        };
+
+        function processaBandwidth (chart) {
             $.post('consulta.php', {
-                ipAlvo: ipAlvo
+                ipAlvo: ipAlvo,
+                tipoConsulta: "banda"
+            }, function (retorno) {
+                //yValue = parseFloat(retorno);
+                let jsonDados = JSON.parse(retorno);
+                xValue = jsonDados.label;
+                yValue = jsonDados['y'];
+
+                var aux, aux2;
+
+                aux = jsonDados['y'];
+                aux1 = jsonDados['y1'];
+
+                jsonDados['y'] = jsonDados['y']-anterior;
+                jsonDados['y1'] = jsonDados['y1']-anterior1;
+
+                anterior = aux;
+                anterior1 = aux1;
+
+                var vetorAuxiliar = {label:jsonDados.label, y:jsonDados['y1']};
+
+                let jsonString = JSON.stringify(vetorAuxiliar);
+
+                let jsonDados1 = JSON.parse(jsonString);
+
+                bool.push( jsonDados );
+
+                bool1.push( jsonDados1 );
+                
+                chart.render();
+
+            });
+        };
+
+        function processaUdpTcp (chart) {
+            $.post('consulta.php', {
+                ipAlvo: ipAlvo,
+                tipoConsulta: "tcpudp"
             }, function (retorno) {
                 //yValue = parseFloat(retorno);
                 let jsonDados = JSON.parse(retorno);
@@ -130,7 +214,8 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
     </div>
 
 
-    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+    <div id="bandwidthChart" style="height: 300px; width: 50%;"></div>
+    <div id="tcpUdpChart" style="height: 300px; width: 50%;"></div>
 
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
