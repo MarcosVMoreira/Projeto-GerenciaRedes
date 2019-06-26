@@ -15,6 +15,7 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
         var bool = [];
         var bool1 = [];
         var udpInfo = [];
+        var udpInfo1 = [];
         var anterior = 0;
         var anterior1 = 0;
 
@@ -38,8 +39,8 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 tipoConsulta: "tcpudp"
             }, function (retorno) {
                 let jsonDados = JSON.parse(retorno);
-                anterior = jsonDados['y'];
-                anterior1 = jsonDados['y1'];
+                anteriorUdp = jsonDados['y'];
+                anterior1Udp = jsonDados['y1'];
             });
 
             var chart = new CanvasJS.Chart("bandwidthChart", {
@@ -82,7 +83,7 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                     title: "Tempo"
                 },
                 axisY:{
-                    logarithmic: true,
+                    //logarithmic: true,
                     includeZero: false,
                     suffix: " Número de pacotes"
                 },
@@ -90,13 +91,12 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                     type: "line",
                     toolTipContent: "{y} Pacotes",
                     dataPoints: udpInfo
-                }/*,
+                },
                 {        
                     type: "line",
-                    yValueFormatString: "#,##0.0#",
-                    toolTipContent: "{y} Bits",
-                    dataPoints: bool1
-                }*/
+                    toolTipContent: "{y} Pacotes",
+                    dataPoints: udpInfo1
+                }
                 
                 ]
             });
@@ -104,16 +104,18 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
             chart1.render();
             
             var updateInterval = 3000;
-            setInterval(function () { updateChart(chart) }, updateInterval);
+            setInterval(function () { updateChart(chart, chart1) }, updateInterval);
             
             var xValue;
             var yValue;
 
         }
 
-        function updateChart(chart) {
+        function updateChart(chart, chart1) {
 
             processaBandwidth(chart);
+            processaUdpTcp(chart1);
+
 
         };
 
@@ -160,30 +162,31 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
             }, function (retorno) {
                 //yValue = parseFloat(retorno);
                 let jsonDados = JSON.parse(retorno);
-                xValue = jsonDados.label;
-                yValue = jsonDados['y'];
 
-                var aux, aux2;
+                xValueUdp = jsonDados.label;
+                yValueUdp = jsonDados['y'];
 
-                aux = jsonDados['y'];
-                aux1 = jsonDados['y1'];
+                var auxUdp, aux1Udp;
 
-                jsonDados['y'] = jsonDados['y']-anterior;
-                jsonDados['y1'] = jsonDados['y1']-anterior1;
+                auxUdp = jsonDados['y'];
+                aux1Udp = jsonDados['y1'];
 
-                anterior = aux;
-                anterior1 = aux1;
+                jsonDados['y'] = jsonDados['y']-anteriorUdp;
+                jsonDados['y1'] = jsonDados['y1']-anterior1Udp;
 
-                var vetorAuxiliar = {label:jsonDados.label, y:jsonDados['y1']};
+                anteriorUdp = auxUdp;
+                anterior1Udp = aux1Udp;
 
-                let jsonString = JSON.stringify(vetorAuxiliar);
+                var vetorAuxiliarUdp = {label:jsonDados.label, y:jsonDados['y1']};
+
+                let jsonString = JSON.stringify(vetorAuxiliarUdp);
 
                 let jsonDados1 = JSON.parse(jsonString);
 
-                bool.push( jsonDados );
+                udpInfo.push( jsonDados );
+                udpInfo1.push( jsonDados1 );
 
-                bool1.push( jsonDados1 );
-                
+                //172.16.103.144
                 chart.render();
 
             });
