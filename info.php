@@ -23,9 +23,40 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
 
         var ipAlvo = $('#ipAlvo').val();
 
+        $( document ).ready(function() {
+/*
+
+            $.post('consulta.php', {
+                ipAlvo: ipAlvo,
+                tipoConsulta: "maquinaInfo"
+            }, function (retorno) {
+                let jsonDados = JSON.parse(retorno);
+
+                $("#processador").append(jsonDados['1']);
+                $("#sistemaOperacional").append(jsonDados['2']);
+                $("#totalRAM").append(jsonDados['3']);
+                $("#tempoLigado").append(jsonDados['4']);
+
+            });*/
+
+        });
+
         function iniciaGrafico () {
 
             ipAlvo = $('#ipAlvo').val();
+
+            $.post('consulta.php', {
+                ipAlvo: ipAlvo,
+                tipoConsulta: "maquinaInfo"
+            }, function (retorno) {
+                let jsonDados = JSON.parse(retorno);
+
+                $("#tempoLigado").append(jsonDados['1']);
+                $("#totalRAM").append(jsonDados['2']);
+                $("#processador").append(jsonDados['3']);
+                $("#sistemaOperacional").append(jsonDados['4']);
+
+            });
 
             $.post('consulta.php', {
                 ipAlvo: ipAlvo,
@@ -289,6 +320,28 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 <div class="input-group pt-5 pb-5">
                     <input type="text" class="form-control" name="ipAlvo" id="ipAlvo" placeholder="Insira o IP alvo" required autofocus/>
                     <button type="button" id="btnEnviar" class="btn btn-success" onclick="iniciaGrafico();">Enviar IP</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 offset-4">
+            <div class="row">
+                Processador:
+                <div class="col-12" id="processador">
+                </div>
+            </div>
+            <div class="row">
+                Sistema operacional:
+                <div class="col-12" id="sistemaOperacional">
+                </div>
+            </div>
+            <div class="row">
+                Total de RAM:
+                <div class="col-12" id="totalRAM">
+                </div>
+            </div>
+            <div class="row">
+                Tempo ligado:
+                <div class="col-12" id="tempoLigado">
                 </div>
             </div>
         </div>
