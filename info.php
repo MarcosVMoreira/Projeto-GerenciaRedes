@@ -52,7 +52,7 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 let jsonDados = JSON.parse(retorno);
 
                 $("#tempoLigado").append(jsonDados['1']);
-                $("#totalRAM").append(jsonDados['2']);
+                $("#totalRAM").append(jsonDados['2']+" Kb ou "+jsonDados['2']/1000000+" GB");
                 $("#processador").append(jsonDados['3']);
                 $("#sistemaOperacional").append(jsonDados['4']);
 
@@ -100,12 +100,16 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 },
                 data: [{
                     type: "line",
+                    showInLegend: true, 
+                    legendText: "Saída",
                     yValueFormatString: "#,##0.0#",
                     toolTipContent: "{y} Bits",
                     dataPoints: bool
                 },
                 {        
                     type: "line",
+                    showInLegend: true, 
+                    legendText: "Entrada",
                     yValueFormatString: "#,##0.0#",
                     toolTipContent: "{y} Bits",
                     dataPoints: bool1
@@ -131,11 +135,17 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 },
                 data: [{
                     type: "line",
+                    showInLegend: true, 
+
+                    legendText: "TCP",
                     toolTipContent: "{y} Pacotes",
                     dataPoints: udpInfo
                 },
                 {        
                     type: "line",
+                    showInLegend: true, 
+
+                    legendText: "UDP",
                     toolTipContent: "{y} Pacotes",
                     dataPoints: udpInfo1
                 }
@@ -160,11 +170,17 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
                 },
                 data: [{
                     type: "line",
+                    showInLegend: true, 
+
+                    legendText: "TCP",
                     toolTipContent: "{y} Pacotes",
                     dataPoints: udpInfoIn
                 },
                 {        
                     type: "line",
+                    showInLegend: true, 
+
+                    legendText: "UDP",
                     toolTipContent: "{y} Pacotes",
                     dataPoints: udpInfo1In
                 }
@@ -315,15 +331,15 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
     <!-- colocar aqui os inputs -->
 
     <div class="container-fluid">
-        <div class="col-12 offset-4">
-            <div class="col-4">
+        <div class="col-8 offset-4">
+            <div class="col-6">
                 <div class="input-group pt-5 pb-5">
                     <input type="text" class="form-control" name="ipAlvo" id="ipAlvo" placeholder="Insira o IP alvo" required autofocus/>
                     <button type="button" id="btnEnviar" class="btn btn-success" onclick="iniciaGrafico();">Enviar IP</button>
                 </div>
             </div>
         </div>
-        <div class="col-12 offset-4">
+        <div class="col-8 offset-4">
             <div class="row">
                 Processador:
                 <div class="col-12" id="processador">
@@ -346,7 +362,6 @@ integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07j
             </div>
         </div>
     </div>
-
 
     <div id="bandwidthChart" style="height: 300px; width: 50%;"></div>
     <div id="tcpUdpChart" style="height: 300px; width: 50%;"></div>
